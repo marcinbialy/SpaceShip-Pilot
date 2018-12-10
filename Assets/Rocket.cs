@@ -22,6 +22,21 @@ public class Rocket : MonoBehaviour {
         Rotate();
 	}
 
+    // collision detector
+    void OnCollisionEnter(Collision collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case "Friendly":
+                print("friendly");
+                break;
+            default:
+                print("dead");
+                break;
+        }
+    }
+
+    // ship rotation
     private void Rotate()
     {
         rigidBody.freezeRotation = true;
@@ -40,6 +55,7 @@ public class Rocket : MonoBehaviour {
         rigidBody.freezeRotation = false;
     }
 
+    // ship engine thrust
     private void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
