@@ -8,6 +8,7 @@ public class Rocket : MonoBehaviour {
     // DEFAULT VALUES
     [SerializeField] float rotationForce = 150f;
     [SerializeField] float mainThrust = 40f;
+    [SerializeField] float levelLoadDelay = 2f;
 
     // AUDIO
     [SerializeField] AudioClip engineSound;
@@ -56,7 +57,7 @@ public class Rocket : MonoBehaviour {
                 audioSource.Stop(); // stop engine sound
                 audioSource.PlayOneShot(succesSound);
                 succesParticle.Play();
-                Invoke("LoadNextLevel", 2f); // load next scene
+                Invoke("LoadNextLevel", levelLoadDelay); // load next scene
                 break;
             default: // you hit other elements
                 state = State.Kill;
@@ -64,7 +65,7 @@ public class Rocket : MonoBehaviour {
                 engineParticle.Stop();
                 audioSource.PlayOneShot(killSound);
                 killParticle.Play();
-                Invoke("LoadFirstLevel", 2f); // load first scene 
+                Invoke("LoadFirstLevel", levelLoadDelay); // load first scene 
                 break;
         }
     }
@@ -105,7 +106,7 @@ public class Rocket : MonoBehaviour {
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidBody.AddRelativeForce(Vector3.up * mainThrust);
+            rigidBody.AddRelativeForce(Vector3.up * mainThrust * Time.deltaTime);
             if (!audioSource.isPlaying) // play engine sound when click space
                 audioSource.PlayOneShot(engineSound);
             engineParticle.Play(); // play engine effect
