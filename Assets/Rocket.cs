@@ -1,14 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour {
 
+    // DEFAULT VALUES
     [SerializeField] float rotationForce = 150f;
     [SerializeField] float mainThrust = 40f;
 
+    // AUDIO
+    [SerializeField] AudioClip engineSound;
+    [SerializeField] AudioClip succesSound;
+    [SerializeField] AudioClip killSound;
+
+    // PARTICLES
+    [SerializeField] ParticleSystem engineParticle;
+    [SerializeField] ParticleSystem succesParticle;
+    [SerializeField] ParticleSystem killParticle;
+
     Rigidbody rigidBody;
     AudioSource audioSource;
+
+    enum State { Win, Kill, Alive};
+    State state = State.Alive;
 
 	// Use this for initialization
 	void Start () {
@@ -18,26 +33,56 @@ public class Rocket : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Thrust();
-        Rotate();
+        if (state == State.Alive) // you can control spaceship only if you alive
+        {
+            ControlRocketThrust();
+            ControlRocketRotate();
+        }
 	}
 
     // collision detector
     void OnCollisionEnter(Collision collision)
     {
-        switch (collision.gameObject.tag)
+        if (state != State.Alive) // stop checking collision when dead
+            return;
+
+        switch (collision.gameObject.tag) // check collision
         {
-            case "Friendly":
-                print("friendly");
+            case "Friendly": // starting point is friendly
+                // do nothing
                 break;
-            default:
-                print("dead");
+            case "Finish": // you land on green Landing Pad
+                state = State.Win;
+                audioSource.Stop(); // stop engine sound
+                audioSource.PlayOneShot(succesSound);
+                succesParticle.Play();
+                Invoke("LoadNextLevel", 2f); // load next scene
+                break;
+            default: // you hit other elements
+                state = State.Kill;
+                audioSource.Stop(); // stop engine sound
+                engineParticle.Stop();
+                audioSource.PlayOneShot(killSound);
+                killParticle.Play();
+                Invoke("LoadFirstLevel", 2f); // load first scene 
                 break;
         }
     }
 
+    // load first scene
+    private void LoadFirstLevel()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    //load next level
+    private void LoadNextLevel()
+    {
+        SceneManager.LoadScene(1); 
+    }
+
     // ship rotation
-    private void Rotate()
+    private void ControlRocketRotate()
     {
         rigidBody.freezeRotation = true;
 
@@ -56,17 +101,20 @@ public class Rocket : MonoBehaviour {
     }
 
     // ship engine thrust
-    private void Thrust()
+    private void ControlRocketThrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
             rigidBody.AddRelativeForce(Vector3.up * mainThrust);
-            if (!audioSource.isPlaying)
-                audioSource.Play();
+            if (!audioSource.isPlaying) // play engine sound when click space
+                audioSource.PlayOneShot(engineSound);
+            engineParticle.Play(); // play engine effect
         }
         else
         {
+            // stop particle and audio effect
             audioSource.Stop();
+            engineParticle.Stop();
         }
     }
 }
