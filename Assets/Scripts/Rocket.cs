@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -39,12 +40,20 @@ public class Rocket : MonoBehaviour {
             ControlRocketThrust();
             ControlRocketRotate();
         }
+
+        SecretKeysInGame();
 	}
+
+    private void SecretKeysInGame()
+    {
+        if (Input.GetKeyDown(KeyCode.Y))
+            LoadNextLevel(); 
+    }
 
     // collision detector
     void OnCollisionEnter(Collision collision)
     {
-        if (state != State.Alive) // stop checking collision when dead
+        if (state != State.Alive) // stop checking collision when dead or you off collision in secret mode
             return;
 
         switch (collision.gameObject.tag) // check collision
@@ -79,26 +88,35 @@ public class Rocket : MonoBehaviour {
     //load next level
     private void LoadNextLevel()
     {
+        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextLevelIndex = currentLevelIndex + 1;
+        if (nextLevelIndex == SceneManager.sceneCountInBuildSettings) // if index nex scene equals number of scenes load first scene
+        {
+            nextLevelIndex = 0;
+        }
         SceneManager.LoadScene(1); 
     }
 
     // ship rotation
     private void ControlRocketRotate()
     {
-        rigidBody.freezeRotation = true;
-
         var rotationThisFrame = rotationForce * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.Rotate(Vector3.forward * rotationThisFrame);
+            Rotate(rotationThisFrame);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.Rotate(-Vector3.forward * rotationThisFrame);
+            Rotate(-rotationThisFrame);
         }
+    }
 
-        rigidBody.freezeRotation = false;
+    private void Rotate(float rotationThisFrame)
+    {
+        rigidBody.freezeRotation = true;
+        transform.Rotate(Vector3.forward * rotationThisFrame);
+        rigidBody.freezeRotation =false;
     }
 
     // ship engine thrust
