@@ -94,7 +94,7 @@ public class Rocket : MonoBehaviour {
         {
             nextLevelIndex = 0;
         }
-        SceneManager.LoadScene(1); 
+        SceneManager.LoadScene(nextLevelIndex); 
     }
 
     // ship rotation
