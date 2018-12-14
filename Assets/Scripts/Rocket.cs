@@ -82,7 +82,7 @@ public class Rocket : MonoBehaviour {
     // load first scene
     private void LoadFirstLevel()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     //load next level
@@ -92,7 +92,7 @@ public class Rocket : MonoBehaviour {
         int nextLevelIndex = currentLevelIndex + 1;
         if (nextLevelIndex == SceneManager.sceneCountInBuildSettings) // if index nex scene equals number of scenes load first scene
         {
-            nextLevelIndex = 0;
+            nextLevelIndex = 1;
         }
         SceneManager.LoadScene(nextLevelIndex); 
     }
