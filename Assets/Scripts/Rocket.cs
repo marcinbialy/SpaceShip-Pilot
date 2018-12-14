@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour {
 
     // DEFAULT VALUES
-    [SerializeField] float rotationForce = 150f;
-    [SerializeField] float mainThrust = 40f;
+    [SerializeField] float rotationForce = 250f;
+    [SerializeField] float mainThrust = 50f;
     [SerializeField] float levelLoadDelay = 2f;
 
     // AUDIO
